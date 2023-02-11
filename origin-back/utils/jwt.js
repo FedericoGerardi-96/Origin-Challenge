@@ -1,13 +1,9 @@
 const jwt = require("jsonwebtoken");
 
-const signToken = (_id, email) => {
-  // if (!process.env.JWT_SECRET_SEED) {
-  //   throw new Error("No hay semilla de JWT - Revisar variables de entorno");
-  // }
-
+const signToken = (id, email) => {
   return jwt.sign(
     // payload
-    { _id, email },
+    { id, email },
 
     // Seed
     "este-es-el-seed",
@@ -18,18 +14,14 @@ const signToken = (_id, email) => {
 };
 
 const isValidToken = (token) => {
-  // if (!process.env.JWT_SECRET_SEED) {
-  //   throw new Error("No hay semilla de JWT - Revisar variables de entorno");
-  // }
-
   return new Promise((resolve, reject) => {
     try {
-      jwt.verify(token, "este-es-el-seed" || "", (err, payload) => {
+      jwt.verify(token, "este-es-el-seed", (err, payload) => {
         if (err) return reject("JWT no es válido");
 
-        const { _id } = payload;
-
-        resolve(_id);
+        const { id } = payload;
+        resolve(id);
+        
       });
     } catch (error) {
       reject("JWT no es válido");

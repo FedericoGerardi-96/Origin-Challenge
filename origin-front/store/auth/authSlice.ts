@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IAuthState, ILogedUser } from "../../interface";
 
 const initialState: IAuthState = {
-  status: "checking",
+  status: "not-authenticated",
   user: {},
   errorMessage: undefined,
 };

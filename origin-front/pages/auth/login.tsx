@@ -34,9 +34,9 @@ const LoginPage = () => {
     const isValidLogin = await dispatch(startLogin({ email, password }));
     if (!isValidLogin) {
       setShowError(true);
-      setTimeout(() => setShowError(false), 5000);
       return;
     }
+    setShowError(false);
     router.replace("/");
   };
 

@@ -1,8 +1,6 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 
-import Cookies from "js-cookie";
-
-import { onChecking, onLogin, onLogout, clearErrorMessage } from "./authSlice";
+import { onChecking, onLogin, onLogout } from "./authSlice";
 import { AppThunk } from "../store";
 
 interface ILogInProps {
@@ -19,7 +17,6 @@ interface IRegisterProps {
 export const startLogin = ({ email, password }: ILogInProps): AppThunk => {
   return async (dispatch) => {
     dispatch(onChecking());
-
     try {
       const url = `http://localhost:5000/api/user/login`;
 
@@ -30,11 +27,10 @@ export const startLogin = ({ email, password }: ILogInProps): AppThunk => {
       const { token, user } = data.data.data;
       const { name, id } = user;
 
-      Cookies.set("token", token);
+      localStorage.setItem("token", token);
       dispatch(onLogin({ name, id, token }));
       return true;
     } catch (error: any) {
-      console.log(error.response.data.message);
       dispatch(onLogout(error.response.data.message));
       return false;
     }
@@ -50,12 +46,48 @@ export const startRegister = ({ name, email, password }: IRegisterProps): AppThu
         name,
         email,
         password,
-      });      
+      });
 
       return true;
     } catch (error: any) {
-      console.log(error.response.data.message);
       dispatch(onLogout(error.response.data.message));
+      return false;
+    }
+  };
+};
+
+export const startLogOut = (): AppThunk => {
+  return async (dispatch) => {
+    try {
+      localStorage.removeItem("token");
+      dispatch(onLogout(undefined));
+      return true;
+    } catch (error: any) {
+      dispatch(onLogout(error.response.data.message));
+      return false;
+    }
+  };
+};
+
+export const checkToken = (): AppThunk => {
+  return async (dispatch) => {
+    dispatch(onChecking());
+    const token = localStorage.getItem("token") || "";
+    try {
+      if (token != "") {
+        const url = `http://localhost:5000/api/user/check-token`;
+        const { data }: AxiosResponse = await axios.post(url, { token });
+        const { user } = data.data;
+        const { name, userId } = user;
+        const id = userId;
+        dispatch(onLogin({ name, id, token }));
+        return true;
+      } else {
+        dispatch(onLogout());
+        return false;
+      }
+    } catch (error: any) {
+      dispatch(onLogout("Error inesperado"));
       return false;
     }
   };

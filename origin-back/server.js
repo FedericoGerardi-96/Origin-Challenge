@@ -7,6 +7,7 @@ const { dbConnectMySql } = require("./config/db");
 const app = express();
 
 const user = require("./routers/user");
+const action = require("./routers/action");
 
 dbConnectMySql();
 
@@ -16,6 +17,7 @@ app.use(cors());
 app.use(errorHandler);
 
 app.use("/api/user", user);
+app.use("/api/action", action);
 
 const PORT = process.env.PORT || 5000;
 
