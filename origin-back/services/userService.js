@@ -7,7 +7,7 @@ const { signToken, isValidToken } = require("../utils/jwt");
 const {isValidEmail} = require("../utils/validate")
 
 const LogIn = async (res, userParam) => {
-  console.log("llegue login")
+
   const { email, password } = userParam;
   try {
 
@@ -83,7 +83,7 @@ const Register = async (res, userParam) => {
 
     const emailLowerCase = email.toLocaleLowerCase();
     const passwordHash = bcrypt.hashSync(password);
-    console.log("hola")
+    
     const dbResponse = await User.create({ name, email: emailLowerCase, password: passwordHash });
 
     if (!dbResponse) {
