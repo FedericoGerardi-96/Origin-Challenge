@@ -7,6 +7,7 @@ import {
   deleteAction,
   startSaving,
   insertActiveActions,
+  endSaving,
 } from "./actionsSlice";
 import { AppThunk } from "../store";
 import { IUserDataBaseAction, IAction, IUser } from "../../interface";
@@ -18,17 +19,23 @@ export const startInsertAction = (action: IAction): AppThunk => {
       const { user } = getState().auth;
       const { id } = user as IUser;
 
-      const url = `http://localhost:5000/api/action`;
+      const url = `http://localhost:6500/api/action`;
       const userActionsResponse: IUserDataBaseAction = await axios.post(url, { ...action, id });
 
-      if (!userActionsResponse) return false;
+      if (!userActionsResponse){
+        dispatch(endSaving());
+        return false;
+      };
 
       const { ok } = userActionsResponse.data;
 
       if (!ok) return false;
       dispatch(insertNewActions({ ...action, id }));
+      dispatch(endSaving());
+
       return true;
     } catch (error: any) {
+      dispatch(endSaving());
       return false;
     }
   };
@@ -41,10 +48,13 @@ export const startGetAction = (): AppThunk => {
       const { user } = getState().auth;
       const { id } = user as IUser;
 
-      const url = `http://localhost:5000/api/action/actionsUsers`;
+      const url = `http://localhost:6500/api/action/actionsUsers`;
       const userActionsResponse: IUserDataBaseAction = await axios.post(url, { id });
 
-      if (!userActionsResponse) return false;
+      if (!userActionsResponse){
+        dispatch(endSaving());
+        return false;
+      };
 
       const { ok, data: actions } = userActionsResponse.data;
 
@@ -54,9 +64,11 @@ export const startGetAction = (): AppThunk => {
       actions!.map((action: IAction) => {
         dispatch(insertActions(action));
       });
+      dispatch(endSaving());
 
       return true;
     } catch (error: any) {
+      dispatch(endSaving());
       return false;
     }
   };
@@ -66,18 +78,24 @@ export const startDeleteAction = (id: string): AppThunk => {
   return async (dispatch) => {
     try {
       dispatch(startSaving());
-      const url = `http://localhost:5000/api/action`;
+      const url = `http://localhost:6500/api/action`;
       const userActionsResponse: IUserDataBaseAction = await axios.delete(url, { data: { id: id } });
 
-      if (!userActionsResponse) return false;
+      if (!userActionsResponse){
+        dispatch(endSaving());
+        return false;
+      };
 
       const { ok } = userActionsResponse.data;
       if (!ok) return false;
 
       dispatch(deleteAction(id));
+      dispatch(endSaving());
 
       return true;
     } catch (error: any) {
+      console.log(error);
+      dispatch(endSaving());
       return false;
     }
   };
@@ -86,19 +104,25 @@ export const startDeleteAction = (id: string): AppThunk => {
 export const startinsertActiveAction = (id: string): AppThunk => {
   return async (dispatch) => {
     try {
-      const url = `http://localhost:5000/api/action/ActionsId`;
+      const url = `http://localhost:6500/api/action/ActionsId`;
       const userActionsResponse: any = await axios.post(url, { id: id });
 
-      if (!userActionsResponse) return false;
+      if (!userActionsResponse){
+        dispatch(endSaving());
+        return false;
+      };
 
       const { ok, data: action } = userActionsResponse.data;
 
       if (!ok) return false;
       localStorage.setItem("action", action.id);
       dispatch(insertActiveActions(action));
+      dispatch(endSaving());
 
       return true;
     } catch (error: any) {
+      dispatch(endSaving());
+      console.log(error);
       return false;
     }
   };
@@ -109,19 +133,25 @@ export const startGetActiveAction = (): AppThunk => {
     try {
       const actionId = localStorage.getItem("action") || "";
       if (actionId === "") return false;
-      const url = `http://localhost:5000/api/action/ActionsId`;
+      const url = `http://localhost:6500/api/action/ActionsId`;
       const userActionsResponse: any = await axios.post(url, { id: actionId });
 
-      if (!userActionsResponse) return false;
+      if (!userActionsResponse){
+        dispatch(endSaving());
+        return false;
+      };
 
       const { ok, data: action } = userActionsResponse.data;
 
       if (!ok) return false;
       localStorage.setItem("action", action.id);
       dispatch(insertActiveActions(action));
+      dispatch(endSaving());
 
       return true;
     } catch (error: any) {
+      dispatch(endSaving());
+      console.log(error);
       return false;
     }
   };

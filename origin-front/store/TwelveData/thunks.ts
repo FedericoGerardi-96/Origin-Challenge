@@ -27,10 +27,19 @@ export const getTwelveData = (params: TwelveDataQuotes_Params): AppThunk => {
       }
       const TwelveDataResponse: TwelveDataQuotes_Resp = await axios.get(url);
 
+      if(!TwelveDataResponse){
+        dispatch(finishCompleteAction());
+        dispatch(cleanData());
+        dispatch(hideGraphic());
+        return false;
+      }
+
       const { data } = TwelveDataResponse;
       const { values, status } = data;
 
       if (status != "ok") {
+        dispatch(finishCompleteAction());
+        dispatch(cleanData());
         dispatch(hideGraphic());
         return false;
       }
@@ -41,12 +50,33 @@ export const getTwelveData = (params: TwelveDataQuotes_Params): AppThunk => {
         let datetime = dayjs(time).format("YYYY-MM-DD");
         dispatch(insertData({ datetime, close }));
       });
-
+      
+      if(values.length === 0){
+        dispatch(finishCompleteAction());
+        dispatch(cleanData());
+        dispatch(hideGraphic());
+        return false;
+      }
+      
       dispatch(showGraphic());
       dispatch(finishCompleteAction());
+
       return true;
     } catch (error: any) {
+      dispatch(finishCompleteAction());
+      dispatch(cleanData());
+      dispatch(hideGraphic());
+      console.log(error);
       return false;
     }
   };
 };
+
+export const hiddeGraphic = (): AppThunk => {
+  return async (dispatch) => {
+    dispatch(finishCompleteAction());
+    dispatch(cleanData());
+    dispatch(hideGraphic());
+    return true;
+  }
+}

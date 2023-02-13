@@ -81,7 +81,9 @@ export const TwelveDataForm = ({ symbol }: Props) => {
 
       return;
     }
-    ok = await dispatch(getTwelveData({ symbol, interval, end_date, start_date }));
+    ok = await dispatch(
+      getTwelveData({ symbol, interval, end_date, start_date })
+    );
     if (ok) {
       Swal.fire("Success", "Busqueda correcta", "success");
       return;
@@ -91,7 +93,14 @@ export const TwelveDataForm = ({ symbol }: Props) => {
 
   return (
     <form onSubmit={onSearchActionInfo}>
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 6 }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 5,
+          marginBottom: 6,
+        }}
+      >
         <Box>
           <RadioGroup
             aria-labelledby="demo-radio-buttons-group-label"
@@ -99,9 +108,25 @@ export const TwelveDataForm = ({ symbol }: Props) => {
             name="radio-buttons-group"
             onChange={handleRadioChange}
           >
-            <FormControlLabel value="0" control={<Radio />} label="Tiempo Real" />
-            <Box sx={{ display: "flex", justifyContent: "space-between", gap: 4, marginTop: 6 }}>
-              <FormControlLabel value="1" control={<Radio />} label="Histórico" />
+            <FormControlLabel
+              value="0"
+              control={<Radio />}
+              label="Tiempo Real"
+            />
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: 4,
+                marginTop: 6,
+                flexDirection: { xs: "column", sm: "row" },
+              }}
+            >
+              <FormControlLabel
+                value="1"
+                control={<Radio />}
+                label="Histórico"
+              />
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   inputFormat="DD/MM/YYYY hh:mm:ss"

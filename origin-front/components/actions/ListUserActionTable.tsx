@@ -16,7 +16,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Swal from "sweetalert2";
 
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
-import { startDeleteAction, startinsertActiveAction } from "../../store/actions/thunks";
+import {
+  startDeleteAction,
+  startinsertActiveAction,
+} from "../../store/actions/thunks";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { Loader } from "../Loader";
@@ -52,10 +55,18 @@ export const ListUserActionTable = () => {
     if (result.isConfirmed) {
       const ok = await dispatch(startDeleteAction(id));
       if (ok) {
-        swalButtons.fire("Modificada!", `La Accion: ${name} se modifico correctamente`, "success");
+        swalButtons.fire(
+          "Modificada!",
+          `La Accion: ${name} se modifico correctamente`,
+          "success"
+        );
         return;
       }
-      swalButtons.fire("Error!", `Error al modificar la accion: ${name}`, "warning");
+      swalButtons.fire(
+        "Error!",
+        `Error al modificar la accion: ${name}`,
+        "warning"
+      );
     }
     swalButtons.fire("Cancelado", `No se modifico la accion: ${name}`, "error");
   };
@@ -85,16 +96,26 @@ export const ListUserActionTable = () => {
           </TableHead>
           <TableBody>
             {userAction?.map((row: any, i: number) => (
-              <TableRow key={i} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+              <TableRow
+                key={i}
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              >
                 <TableCell align="right">
-                  <p onClick={() => onSaveActiveAction(row.symbol, row.id)} style={{ color: "#0049b0" }}>
+                  <p
+                    onClick={() => onSaveActiveAction(row.symbol, row.id)}
+                    style={{ color: "#0049b0", cursor: "pointer" }}
+                  >
                     {row.symbol}
                   </p>
                 </TableCell>
                 <TableCell align="right">{row.name}</TableCell>
                 <TableCell align="right">{row.currency}</TableCell>
                 <TableCell align="right">
-                  <IconButton onClick={() => onDeleteAction(row.id, row.name)} aria-label="delete" size="large">
+                  <IconButton
+                    onClick={() => onDeleteAction(row.id, row.name)}
+                    aria-label="delete"
+                    size="large"
+                  >
                     <DeleteIcon />
                   </IconButton>
                 </TableCell>

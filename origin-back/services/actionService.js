@@ -22,7 +22,7 @@ const InsertAction = async (res, userParam) => {
     return apiResponse(res, StatusCodes.OK, { mensaje: "Agregado correctamente", ok: true });
   } catch (error) {
     return apiResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, {
-      mensaje: `Error inesperado: ${error.mensaje}`,
+      mensaje: `Error inesperado: ${error.message}`,
       ok: false,
     });
   }
@@ -38,7 +38,7 @@ const DeleteAction = async (res, userParam) => {
     return apiResponse(res, StatusCodes.OK, { mensaje: "Eliminado correctamente", ok: true });
   } catch (error) {
     return apiResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, {
-      mensaje: `Error inesperado: ${error.mensaje}`,
+      mensaje: `Error inesperado: ${error.message}`,
       ok: false,
     });
   }
@@ -91,7 +91,7 @@ const GetAction = async (res, userParam) => {
     });
   } catch (error) {
     return apiResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, {
-      mensaje: `Error inesperado: ${error.mensaje}`,
+      mensaje: `Error inesperado: ${error.message}`,
       ok: false,
     });
   }
@@ -119,7 +119,7 @@ const GetActionId = async (res, userParam) => {
     });
   } catch (error) {
     return apiResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, {
-      mensaje: `Error inesperado: ${error.mensaje}`,
+      mensaje: `Error inesperado: ${error.message}`,
       ok: false,
     });
   }

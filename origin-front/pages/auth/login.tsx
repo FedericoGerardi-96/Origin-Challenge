@@ -16,8 +16,9 @@ import { useForm } from "react-hook-form";
 import { validations } from "../../utils";
 import { AuthLayout } from "../../components/layout/AuthLayout";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
-import { startLogin } from "../../store/auth";
-import { Loader } from "@/components";
+import { checkToken, startLogin } from "../../store/auth";
+import { Loader } from "../../components";
+import { startGetAction } from "@/store/actions/thunks";
 
 type FormData = {
   email: string;
@@ -37,6 +38,24 @@ const LoginPage = () => {
 
   const router = useRouter();
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const authCheck = async () => {
+      if (status === "not-authenticated") {
+        // EVerifico en caso de existir su token en el storage
+        // y en caso de estar almacenado su token, obtengo el usuario devolviendo un true
+        const ok = await dispatch(checkToken());
+        if (!ok) {
+          return;
+        }
+      }
+      // Si llegue hasta aca y existe un usuario logeado, obtengo sus acciones y las guardo en el storage
+      await dispatch(startGetAction());
+      router.replace("/");
+      return;
+    };
+    authCheck();
+  }, []);
 
   const {
     register,
@@ -70,10 +89,6 @@ const LoginPage = () => {
       showPassword: !values.showPassword,
     });
   };
-
-  useEffect(() => {
-    console.log(status === "checking");
-  }, [status === "checking"]);
 
   return (
     <AuthLayout title={"Login"}>
@@ -120,7 +135,11 @@ const LoginPage = () => {
               helperText={errors.password?.message}
               InputProps={{
                 endAdornment: (
-                  <IconButton aria-label="toggle password visibility" onClick={handleClickShowPassword} edge="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    edge="end"
+                  >
                     {values.showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 ),

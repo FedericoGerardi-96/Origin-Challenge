@@ -4,14 +4,35 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/Usuario");
 const { apiResponse } = require("../utils/ApiResponse");
 const { signToken, isValidToken } = require("../utils/jwt");
+const {isValidEmail} = require("../utils/validate")
 
 const LogIn = async (res, userParam) => {
+  console.log("llegue login")
   const { email, password } = userParam;
   try {
+
+    if (email.length < 0) {
+      return apiResponse(res, StatusCodes.BAD_REQUEST, { mensaje: "El Email es obligatorio", ok: false });
+    }
+
+    if (password.length <= 4) {
+      return apiResponse(res, StatusCodes.BAD_REQUEST, {
+        mensaje: "La contraseña debe tener mas de 4 caracteres",
+        ok: false,
+      });
+    }
+
+    if (!isValidEmail(email)) {
+      return apiResponse(res, StatusCodes.BAD_REQUEST, {
+        mensaje: "El Email no parece tener el formato correcto",
+        ok: false,
+      });
+    }
+
     const dbResponse = await User.findOne({ where: { email: email } });
 
     if (!dbResponse) {
-      return apiResponse(res, StatusCodes.NOT_FOUND, { mensaje: "Correo invalido", ok: false });
+      return apiResponse(res, StatusCodes.NOT_FOUND, { mensaje: "No se encontro el usuario ", ok: false });
     }
 
     const { dataValues: user } = dbResponse;
@@ -31,7 +52,7 @@ const LogIn = async (res, userParam) => {
     });
   } catch (error) {
     return apiResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, {
-      mensaje: `Error inesperado: ${error.mensaje}`,
+      mensaje: `Error inesperado: ${error.message}`,
       ok: false,
     });
   }
@@ -59,8 +80,10 @@ const Register = async (res, userParam) => {
       });
     }
 
+
     const emailLowerCase = email.toLocaleLowerCase();
     const passwordHash = bcrypt.hashSync(password);
+    console.log("hola")
     const dbResponse = await User.create({ name, email: emailLowerCase, password: passwordHash });
 
     if (!dbResponse) {
@@ -79,7 +102,7 @@ const Register = async (res, userParam) => {
     });
   } catch (error) {
     return apiResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, {
-      mensaje: `Error inesperado: ${error.mensaje}`,
+      mensaje: `Error inesperado: ${error.message}`,
       ok: false,
     });
   }
@@ -106,7 +129,7 @@ const CheckToken = async (res, userParam) => {
     return apiResponse(res, StatusCodes.OK, { token, data: { name, email, id }, ok: true, mensaje: "Token Correcto" });
   } catch (error) {
     return apiResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, {
-      mensaje: `Error inesperado: ${error.mensaje}`,
+      mensaje: `Error inesperado: ${error.message}`,
       ok: false,
     });
   }

@@ -16,6 +16,9 @@ export const actionSlice = createSlice({
     startSaving: (state) => {
       state.isSaving = true;
     },
+    endSaving: (state) => {
+      state.isSaving = false;
+    },
     cleanActions: (state) => {
       state.userAction = [];
     },
@@ -50,6 +53,7 @@ export const actionSlice = createSlice({
 
 export const {
   insertActions,
+  endSaving,
   startSaving,
   cleanActions,
   insertNewActions,

@@ -11,9 +11,18 @@ import { TwelveDataForm } from "../../components/TwelveData/TwelveDataForm";
 import RouteGuard from "../../components/RoutGuard";
 import { TwelveDataGraphic } from "../../components/TwelveData";
 import { startGetActiveAction } from "../../store/actions/thunks";
+import { hiddeGraphic } from "../../store/TwelveData/thunks";
 
 const Action: NextPage = () => {
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const cleanDataGraphic = async () => {
+      const ok = await dispatch(hiddeGraphic());
+      return;
+    };
+    cleanDataGraphic();
+  }, []);
 
   // Obtengo del store los datos de la accion seleccionada
   const { activeAction } = useAppSelector((state: any) => state.action);
@@ -36,7 +45,10 @@ const Action: NextPage = () => {
   }, []);
 
   return (
-    <Layout title="Mis Acciones" pageDescription="Acciones preferidas de cada usuario">
+    <Layout
+      title="Mis Acciones"
+      pageDescription="Acciones preferidas de cada usuario"
+    >
       <RouteGuard>
         <Box>
           <Box
@@ -48,9 +60,16 @@ const Action: NextPage = () => {
               marginBottom: 2,
             }}
           >
-            <Typography variant="h4">
-              {symbol} - {actionName} - {currency}
-            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", md: "row" },
+              }}
+            >
+              <Typography variant="h4">{symbol} -</Typography>
+              <Typography variant="h4">{actionName} -</Typography>
+              <Typography variant="h4">{currency}</Typography>
+            </Box>
             <Typography variant="h4">{name}</Typography>
           </Box>
           <Divider />

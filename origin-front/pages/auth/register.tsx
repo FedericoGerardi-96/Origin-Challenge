@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useRouter } from "next/router";
 
@@ -18,8 +18,9 @@ import { useForm } from "react-hook-form";
 import { validations } from "../../utils";
 import { AuthLayout } from "../../components/layout/AuthLayout";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
-import { startRegister } from "../../store/auth";
+import { checkToken, startRegister } from "../../store/auth";
 import { Loader } from "../../components";
+import { startGetAction } from "../../store/actions/thunks";
 
 type FormData = {
   email: string;
@@ -39,7 +40,25 @@ const RegisterPage = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const { isSaving } = useAppSelector((state: any) => state.auth);
+  const { isSaving, status } = useAppSelector((state: any) => state.auth);
+
+  useEffect(() => {
+    const authCheck = async () => {
+      if (status === "not-authenticated") {
+        // Verifico en caso de existir su token en el storage
+        // y en caso de estar almacenado su token, obtengo el usuario devolviendo un true
+        const ok = await dispatch(checkToken());
+        if (!ok) {
+          return;
+        }
+      }
+      // Si llegue hasta aca y existe un usuario logeado, obtengo sus acciones y las guardo en el storage
+      await dispatch(startGetAction());
+      router.replace("/");
+      return;
+    };
+    authCheck();
+  }, []);
 
   const {
     register,
@@ -50,7 +69,9 @@ const RegisterPage = () => {
 
   const onLoginUser = async ({ name, email, password }: FormData) => {
     setShowError(false);
-    const isValidLogin = await dispatch(startRegister({ name, email, password }));
+    const isValidLogin = await dispatch(
+      startRegister({ name, email, password })
+    );
 
     if (!isValidLogin) {
       setShowError(true);
@@ -134,7 +155,11 @@ const RegisterPage = () => {
               helperText={errors.password?.message}
               InputProps={{
                 endAdornment: (
-                  <IconButton aria-label="toggle password visibility" onClick={handleClickShowPassword} edge="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    edge="end"
+                  >
                     {values.showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 ),

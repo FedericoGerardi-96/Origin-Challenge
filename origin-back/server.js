@@ -19,9 +19,9 @@ app.use(errorHandler);
 app.use("/api/user", user);
 app.use("/api/action", action);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 6500;
 
-const server = app.listen(PORT, console.log("Servidor ejecutado en ambiente", process.env.NODE_ENV));
+const server = app.listen(PORT);
 
 process.on("unhandledRejection", (error, promise) => {
   console.log("Errores", error.message);
