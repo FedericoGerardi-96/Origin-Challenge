@@ -1,17 +1,30 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 
-import { insertActions, insertNewActions, cleanActions, deleteAction } from "./actionsSlice";
+import {
+  insertActions,
+  insertNewActions,
+  cleanActions,
+  deleteAction,
+  startSaving,
+  insertActiveActions,
+} from "./actionsSlice";
 import { AppThunk } from "../store";
-import { IAction, IUser } from "../../interface";
+import { IUserDataBaseAction, IAction, IUser } from "../../interface";
 
 export const startInsertAction = (action: IAction): AppThunk => {
   return async (dispatch, getState) => {
     try {
+      dispatch(startSaving());
       const { user } = getState().auth;
       const { id } = user as IUser;
+
       const url = `http://localhost:5000/api/action`;
-      const { data }: AxiosResponse = await axios.post<IAction>(url, { ...action, id });
-      const { ok } = data;
+      const userActionsResponse: IUserDataBaseAction = await axios.post(url, { ...action, id });
+
+      if (!userActionsResponse) return false;
+
+      const { ok } = userActionsResponse.data;
+
       if (!ok) return false;
       dispatch(insertNewActions({ ...action, id }));
       return true;
@@ -24,16 +37,24 @@ export const startInsertAction = (action: IAction): AppThunk => {
 export const startGetAction = (): AppThunk => {
   return async (dispatch, getState) => {
     try {
+      dispatch(startSaving());
       const { user } = getState().auth;
       const { id } = user as IUser;
+
       const url = `http://localhost:5000/api/action/actionsUsers`;
-      const { data }: AxiosResponse = await axios.post<IAction>(url, { id });
-      const { ok, data: actions } = data;
+      const userActionsResponse: IUserDataBaseAction = await axios.post(url, { id });
+
+      if (!userActionsResponse) return false;
+
+      const { ok, data: actions } = userActionsResponse.data;
+
       dispatch(cleanActions());
+
       if (!ok) return false;
-      actions.map((action: IAction) => {
+      actions!.map((action: IAction) => {
         dispatch(insertActions(action));
       });
+
       return true;
     } catch (error: any) {
       return false;
@@ -42,14 +63,63 @@ export const startGetAction = (): AppThunk => {
 };
 
 export const startDeleteAction = (id: string): AppThunk => {
-  return async (dispatch, getState) => {
-    console.log(id);
+  return async (dispatch) => {
     try {
+      dispatch(startSaving());
       const url = `http://localhost:5000/api/action`;
-      const { data: dataresp }: AxiosResponse = await axios.delete<IAction>(url, { data: { id: id } });
-      const { ok } = dataresp;
+      const userActionsResponse: IUserDataBaseAction = await axios.delete(url, { data: { id: id } });
+
+      if (!userActionsResponse) return false;
+
+      const { ok } = userActionsResponse.data;
       if (!ok) return false;
+
       dispatch(deleteAction(id));
+
+      return true;
+    } catch (error: any) {
+      return false;
+    }
+  };
+};
+
+export const startinsertActiveAction = (id: string): AppThunk => {
+  return async (dispatch) => {
+    try {
+      const url = `http://localhost:5000/api/action/ActionsId`;
+      const userActionsResponse: any = await axios.post(url, { id: id });
+
+      if (!userActionsResponse) return false;
+
+      const { ok, data: action } = userActionsResponse.data;
+
+      if (!ok) return false;
+      localStorage.setItem("action", action.id);
+      dispatch(insertActiveActions(action));
+
+      return true;
+    } catch (error: any) {
+      return false;
+    }
+  };
+};
+
+export const startGetActiveAction = (): AppThunk => {
+  return async (dispatch) => {
+    try {
+      const actionId = localStorage.getItem("action") || "";
+      if (actionId === "") return false;
+      const url = `http://localhost:5000/api/action/ActionsId`;
+      const userActionsResponse: any = await axios.post(url, { id: actionId });
+
+      if (!userActionsResponse) return false;
+
+      const { ok, data: action } = userActionsResponse.data;
+
+      if (!ok) return false;
+      localStorage.setItem("action", action.id);
+      dispatch(insertActiveActions(action));
+
       return true;
     } catch (error: any) {
       return false;

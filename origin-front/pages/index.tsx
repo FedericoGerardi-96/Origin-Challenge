@@ -1,7 +1,3 @@
-import { useEffect, useState } from "react";
-
-import { useRouter } from "next/router";
-
 import { Box, Divider, Typography } from "@mui/material";
 
 import { ListUserActionTable, Layout, AddActionForm } from "../components";
@@ -16,21 +12,23 @@ export default function Home() {
   return (
     <RouteGuard>
       <Layout title="Mis Acciones" pageDescription="Acciones preferidas de cada usuario">
-        <Box
-          sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 4,
-          }}
-        >
-          <Typography variant="h4">Mis Acciones</Typography>
-          <Typography variant="h4">{name}</Typography>
+        <Box>
+          <Box
+            sx={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 4,
+            }}
+          >
+            <Typography variant="h4">Mis Acciones</Typography>
+            <Typography variant="h4">{name}</Typography>
+          </Box>
+          <Divider sx={{ marginBottom: 4 }} />
+          <AddActionForm />
+          <ListUserActionTable />
         </Box>
-        <Divider sx={{ marginBottom: 4 }} />
-        <AddActionForm />
-        <ListUserActionTable />
       </Layout>
     </RouteGuard>
   );

@@ -1,32 +1,45 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { IAction, IActionState } from "../../interface";
+import { IUserActionState, IAction } from "../../interface";
 
-const initialState: IActionState = {
-  action: [],
+const initialState: IUserActionState = {
+  isSaving: false,
+  userAction: [],
   errorMessage: undefined,
+  activeAction: {},
 };
 
 export const actionSlice = createSlice({
   name: "action",
   initialState,
   reducers: {
+    startSaving: (state) => {
+      state.isSaving = true;
+    },
     cleanActions: (state) => {
-      state.action = [];
+      state.userAction = [];
     },
     insertActions: (state, action: PayloadAction<IAction>) => {
-      state.action.push(action.payload);
+      state.userAction.push(action.payload);
       state.errorMessage = undefined;
+      state.isSaving = false;
     },
     insertNewActions: (state, action: PayloadAction<IAction>) => {
-      state.action.push(action.payload);
+      state.userAction.push(action.payload);
       state.errorMessage = undefined;
+      state.isSaving = false;
     },
     deleteAction: (state, action: PayloadAction<string>) => {
-      state.action.splice(
-        state.action.findIndex((actions) => actions.id === action.payload),
-        1
-      );
+      state.userAction.splice(state.userAction.findIndex((actions) => actions.id === action.payload));
+      state.errorMessage = undefined;
+      state.isSaving = false;
+    },
+    insertActiveActions: (state, action: PayloadAction<IAction>) => {
+      state.activeAction = action.payload;
+      state.errorMessage = undefined;
+    },
+    deleteActiveActions: (state, action: PayloadAction<IAction>) => {
+      state.activeAction = action.payload;
       state.errorMessage = undefined;
     },
     clearErrorMessage: (state) => {
@@ -35,4 +48,13 @@ export const actionSlice = createSlice({
   },
 });
 
-export const { insertActions, cleanActions, insertNewActions, deleteAction, clearErrorMessage } = actionSlice.actions;
+export const {
+  insertActions,
+  startSaving,
+  cleanActions,
+  insertNewActions,
+  deleteAction,
+  insertActiveActions,
+  deleteActiveActions,
+  clearErrorMessage,
+} = actionSlice.actions;

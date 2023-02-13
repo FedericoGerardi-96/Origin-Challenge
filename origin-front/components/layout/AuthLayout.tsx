@@ -1,6 +1,6 @@
 import { FC, PropsWithChildren } from "react";
 import Head from "next/head";
-import { Box } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 
 interface Props {
   title: string;
@@ -14,9 +14,43 @@ export const AuthLayout: FC<PropsWithChildren<Props>> = ({ children, title }) =>
       </Head>
 
       <main>
-        <Box display="flex" justifyContent="center" alignItems="center" height="calc(100vh - 200px)">
-          {children}
-        </Box>
+        <ul className={`background`}>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+        <Grid container direction="column" alignItems="center" justifyContent="center" sx={{ minHeight: "100vh" }}>
+          <Grid
+            container
+            direction="column"
+            alignItems="center"
+            justifyContent="center"
+            sx={{
+              width: { sm: 450 },
+              backgroundColor: "#fff",
+              padding: 3,
+              borderRadius: 2,
+              zIndex: 99,
+            }}
+          >
+            <Typography variant="h2" sx={{ mb: 1 }}>
+              {title}
+            </Typography>
+            {children}
+          </Grid>
+        </Grid>
       </main>
     </>
   );

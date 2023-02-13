@@ -1,11 +1,17 @@
 import { FormEvent, useMemo, useState } from "react";
 
-import { TextField, Autocomplete, Box, Button } from "@mui/material";
+import { TextField, Autocomplete, Box } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 
-import { useAppDispatch } from "../../hooks/redux";
+import AddIcon from "@mui/icons-material/Add";
+
+import Swal from "sweetalert2";
+
+import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { getActions } from "../../helpers";
 import { IAction } from "../../interface";
 import { startInsertAction } from "../../store/actions/thunks";
+import { Loader } from "../Loader";
 
 interface IActionsOption {
   label: string;
@@ -18,6 +24,8 @@ export const AddActionForm = () => {
   const [ActionsArray, setActionsArray] = useState<IActionsOption[] | null>();
   // Accion seleccionada para que el usuario pueda agregarla
   const [actionsSelected, setactionsSelected] = useState<IActionsOption | null>();
+
+  const { isSaving } = useAppSelector((state: any) => state.action);
 
   const dispatch = useAppDispatch();
 
@@ -39,6 +47,11 @@ export const AddActionForm = () => {
     if (!actionsSelected) return;
     const { action } = actionsSelected!;
     const ok = await dispatch(startInsertAction(action));
+    if (ok) {
+      Swal.fire("Success", "Accion agregada correctamente", "success");
+      return;
+    }
+    Swal.fire("Error", "Error al agregar la accion", "warning");
   };
 
   return (
@@ -67,10 +80,22 @@ export const AddActionForm = () => {
             }}
             renderInput={(params) => <TextField {...params} label="Action" />}
           />
-          <Button type="submit" sx={{ marginTop: { xs: 5, md: 0 } }} variant="outlined">
-            Agregar Símbolo
-          </Button>
+          <LoadingButton
+            sx={{ marginTop: { xs: 5, md: 0 } }}
+            size="large"
+            color="primary"
+            type="submit"
+            loading={isSaving}
+            loadingPosition="start"
+            startIcon={<AddIcon />}
+            variant="outlined"
+          >
+            <span>Ingresar</span>
+          </LoadingButton>
         </form>
+        <Box sx={{ display: isSaving ? "block" : "none" }}>
+          <Loader />
+        </Box>
       </Box>
     </>
   );
